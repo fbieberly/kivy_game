@@ -1,5 +1,6 @@
 from sys import exit
 from time import time
+from random import randint
 from kivy.app import App
 from kivy.core.window import Window
 from kivy.uix.widget import Widget
@@ -14,7 +15,7 @@ Config.set('graphics', 'height', '600')
 
 class PlayerBullet(Widget):
 	name = 'bullet'
-	health = NumericProperty(0)
+	health = NumericProperty(5)
 	velocity_x = NumericProperty(0)
 	velocity_y = NumericProperty(5)
 	velocity = ReferenceListProperty(velocity_x, velocity_y)
@@ -22,12 +23,22 @@ class PlayerBullet(Widget):
 	def update(self):
 		self.pos = Vector(*self.velocity) + self.pos
 
+class EnemyShip(Widget):
+	name = 'enemy'
+	health = NumericProperty(100)
+	velocity_x = NumericProperty(0)
+	velocity_y = NumericProperty(0)
+	velocity = ReferenceListProperty(velocity_x, velocity_y)
+
+	def update(self):
+		self.pos = Vector(*self.velocity) + self.pos
 
 class PlayerShip(Widget):
 	name = 'player'
-	health = NumericProperty(0)
+	health = NumericProperty(100)
 	gun_cooldown = time()
 	gun_fire_interval = 0.1
+	bullet_strength = 70
 	move_text = []
 	velocity_x = NumericProperty(0)
 	velocity_y = NumericProperty(0)
@@ -50,7 +61,6 @@ class PlayerShip(Widget):
 class ShooterGame(Widget):
 	player1 = ObjectProperty(None)
 	label1 = ObjectProperty(None)
-	bullets = []
 	
 	def __init__(self, **kwargs):
 		super(ShooterGame, self).__init__(**kwargs)
@@ -90,8 +100,6 @@ class ShooterGame(Widget):
 		return True
 
 	def update(self, dt):
-		#self.player1.update()
-
 		if self.player1.x < self.x:
 			self.player1.x = 0
 		if self.player1.x > self.width - self.player1.width:
@@ -104,21 +112,44 @@ class ShooterGame(Widget):
 		if 'spacebar' in self.player1.move_text:
 			if time() > self.player1.gun_cooldown:
 				bullet = PlayerBullet()
-				bullet.x = self.player1.x
-				bullet.y = self.player1.y
-				#self.bullets.append(bullet)
+				bullet.x = self.player1.x + self.player1.width/2
+				bullet.y = self.player1.top
 				self.add_widget(bullet)
 				self.player1.gun_cooldown = time() + self.player1.gun_fire_interval
-			# bullet.x = self.player1.x
-			# bullet.y = self.player1.y
+
+		bullet_pos = []
 
 		for child in self.children:
-			try: 
-				child.update()
-				if child.y > self.height:
-					self.remove_widget(child)
+			child_name = None
+			try:
+				child_name = child.name
 			except:
 				pass
+			if child_name == 'bullet': 
+				child.update()
+				bullet_pos.append((child.x + child.width/2, child.y + child.height/2))
+				if child.y > self.height + 100:
+					self.remove_widget(child)
+				if child.health < 0:
+					self.remove_widget(child)
+			elif child_name == 'player':
+				child.update()
+			elif child_name == 'enemy':
+				child.update()
+				for point in bullet_pos:
+					if child.collide_point(point[0], point[1]):
+						child.health -= self.player1.bullet_strength
+						for child2 in self.children:
+							if  child2.x + child2.width/2 == point[0] and \
+								child2.y + child2.height/2 == point[1] :
+							   child2.health -= 10
+							   break
+				if child.health < 0:
+					self.remove_widget(child)
+					enemy = EnemyShip()
+					enemy.x = randint(100, self.width - 100)
+					enemy.y = randint(300, self.top - 30)
+					self.add_widget(enemy)
 		
 
 		self.label1.text = str(self.player1.move_text)
