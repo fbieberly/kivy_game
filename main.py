@@ -1,6 +1,6 @@
 from sys import exit
 from time import time
-from random import randint, choice
+from random import randint, choice, random
 from kivy.app import App
 from kivy.graphics import Color, Ellipse
 from kivy.core.window import Window
@@ -30,7 +30,9 @@ class PlayerBullet(Widget):
 class Debris(Widget):
 	name = 'debris'
 	color1 = 0.7
-	color2 = 0.7
+	color2 = 0.5
+	size1 = 10
+	size_decrease = random()
 	health = NumericProperty(10)
 	velocity_x = NumericProperty(0)
 	velocity_y = NumericProperty(0)
@@ -39,10 +41,11 @@ class Debris(Widget):
 	def update(self):
 		self.canvas.clear()
 		self.canvas.add(Color(self.color1, self.color2, 0))
-		self.canvas.add(Ellipse(pos=self.pos,size=(20,20)))
+		self.canvas.add(Ellipse(pos=self.pos,size=(int(self.size1),int(self.size1))))
 		self.color1 -= 0.02
 		self.color2 -= 0.02
-		if self.color1 <= 0:
+		self.size1 += self.size_decrease
+		if self.color2 <= 0:
 			self.health = 0
 		self.pos = Vector(*self.velocity) + self.pos
 
@@ -108,8 +111,8 @@ class ShooterGame(Widget):
 		return True
 
 	def spawn_debris(self, x, y):
-		dirs = [-2, -1, 1, 2]
-		for xx in range(4):
+		dirs = [-3 ,-2, -1, 1, 2, 3]
+		for xx in range(10):
 			debris = Debris()
 			debris.x = x
 			debris.y = y
