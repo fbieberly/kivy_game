@@ -1,7 +1,8 @@
 from sys import exit
 from time import time
-from random import randint
+from random import randint, choice
 from kivy.app import App
+from kivy.graphics import Color, Ellipse
 from kivy.core.window import Window
 from kivy.uix.widget import Widget
 from kivy.properties import NumericProperty, ReferenceListProperty,\
@@ -17,11 +18,34 @@ class PlayerBullet(Widget):
 	name = 'bullet'
 	health = NumericProperty(5)
 	velocity_x = NumericProperty(0)
-	velocity_y = NumericProperty(5)
+	velocity_y = NumericProperty(4)
 	velocity = ReferenceListProperty(velocity_x, velocity_y)
 
 	def update(self):
+		#self.canvas.clear()
+		#self.canvas.add(Ellipse(pos=self.pos,size=(randint(4, 8),randint(4, 8))))
+		#self.canvas.add(Color(1, 1, 1))
 		self.pos = Vector(*self.velocity) + self.pos
+
+class Debris(Widget):
+	name = 'debris'
+	color1 = 0.7
+	color2 = 0.7
+	health = NumericProperty(10)
+	velocity_x = NumericProperty(0)
+	velocity_y = NumericProperty(0)
+	velocity = ReferenceListProperty(velocity_x, velocity_y)
+
+	def update(self):
+		self.canvas.clear()
+		self.canvas.add(Color(self.color1, self.color2, 0))
+		self.canvas.add(Ellipse(pos=self.pos,size=(20,20)))
+		self.color1 -= 0.02
+		self.color2 -= 0.02
+		if self.color1 <= 0:
+			self.health = 0
+		self.pos = Vector(*self.velocity) + self.pos
+
 
 class EnemyShip(Widget):
 	name = 'enemy'
@@ -45,7 +69,7 @@ class PlayerShip(Widget):
 	velocity = ReferenceListProperty(velocity_x, velocity_y)
 
 	def update(self):
-		vel = 3
+		vel = 4
 		self.velocity_x = 0
 		self.velocity_y =0
 		if 'a' in self.move_text:
@@ -82,6 +106,16 @@ class ShooterGame(Widget):
 		# Return True to accept the key. Otherwise, it will be used by
 		# the system.
 		return True
+
+	def spawn_debris(self, x, y):
+		dirs = [-2, -1, 1, 2]
+		for xx in range(4):
+			debris = Debris()
+			debris.x = x
+			debris.y = y
+			debris.velocity_x = choice(dirs)
+			debris.velocity_y = choice(dirs)
+			self.add_widget(debris)
 
 	def _on_keyboard_up(self, keyboard, keycode):
 		#self.label1.text = keycode[1]
@@ -134,6 +168,10 @@ class ShooterGame(Widget):
 					self.remove_widget(child)
 			elif child_name == 'player':
 				child.update()
+			elif child_name == 'debris':
+				child.update()
+				if child.health < 0:
+					self.remove_widget(child)
 			elif child_name == 'enemy':
 				child.update()
 				for point in bullet_pos:
@@ -146,12 +184,12 @@ class ShooterGame(Widget):
 							   break
 				if child.health < 0:
 					self.remove_widget(child)
+					self.spawn_debris(child.x, child.y)
 					enemy = EnemyShip()
 					enemy.x = randint(100, self.width - 100)
 					enemy.y = randint(300, self.top - 30)
 					self.add_widget(enemy)
 		
-
 		self.label1.text = str(self.player1.move_text)
 		pass
 

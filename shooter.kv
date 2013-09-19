@@ -11,7 +11,7 @@
 			size:self.size
 
 <EnemyShip>:
-	size: 20, 40
+	size: 40, 30
 	canvas:
 		Clear
 		Color: 
@@ -20,6 +20,15 @@
 			pos:self.pos
 			size:self.size
 		
+<Debris>:
+	size: 10, 10
+	canvas:
+		Clear
+		# Color: 
+		# 	rgb: (0.7, 0.7, 0)
+		Ellipse:
+			pos:self.pos
+			size:self.size
 
 <PlayerBullet>:
 	id: bullet
@@ -35,11 +44,6 @@
 <ShooterGame>:
 	player1: player_ship
 	label1: label_one
-	
-	# canvas:
-	# 	Rectangle:
-	# 		pos: self.center_x-1, 0
-	# 		size: 2, self.height
 	
 	Label:
 		id: label_one
