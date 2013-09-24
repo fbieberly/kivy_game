@@ -26,17 +26,28 @@
 		Clear
 		# Color: 
 		# 	rgb: (0.7, 0.7, 0)
-		Ellipse:
+		Rectangle:
 			pos:self.pos
 			size:self.size
 
 <PlayerBullet>:
-	id: bullet
-	size: 3, 3
+	id: pbullet
+	size: 2, 15
 	canvas:
 		Clear
 		Color: 
-			rgb: (1, 1, 1)
+			rgb: (0, 1, 0)
+		Rectangle:
+			pos:self.pos
+			size:self.size
+
+<EnemyBullet>:
+	id: ebullet
+	size: 2, 8
+	canvas:
+		Clear
+		Color: 
+			rgb: (1, 0, 0)
 		Rectangle:
 			pos:self.pos
 			size:self.size
@@ -56,8 +67,3 @@
 		id: player_ship
 		center_x: root.width / 2
 		center_y: 30
-
-	EnemyShip:
-		id: enemy_ship
-		center_x: 500
-		center_y: 500
