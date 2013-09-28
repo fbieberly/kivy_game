@@ -1,3 +1,10 @@
+from kivy.config import Config
+WIDTH = 800
+HEIGHT = 600
+Config.set('graphics', 'width', WIDTH)
+Config.set('graphics', 'height', HEIGHT)
+Config.write()
+
 from sys import exit
 from time import time
 from random import randint, choice, random
@@ -5,164 +12,22 @@ from kivy.app import App
 from kivy.graphics import Color, Ellipse, Rectangle
 from kivy.core.window import Window
 from kivy.uix.widget import Widget
+from kivy.uix.boxlayout import BoxLayout
 from kivy.properties import NumericProperty, ReferenceListProperty,\
 	ObjectProperty
 from kivy.vector import Vector
 from kivy.clock import Clock
 
-from kivy.config import Config
-Config.set('graphics', 'width', '800')
-Config.set('graphics', 'height', '600')
-
-class PlayerBullet(Widget):
-	name = 'pbullet'
-	health = NumericProperty(5)
-	velocity_x = NumericProperty(0)
-	velocity_y = NumericProperty(6)
-	velocity = ReferenceListProperty(velocity_x, velocity_y)
-
-	def update(self):
-		ret = True
-		self.pos = Vector(*self.velocity) + self.pos
-
-		if self.y > self.parent.top + 100 or self.y < -100 or self.x > self.parent.width+100 or self.x < -100:
-			ret = False
-		elif self.health <= 0:
-			ret = False
-		if ret == False:
-			self.parent.remove_widget(self)
-		return ret
-
-class EnemyBullet(Widget):
-	name = 'ebullet'
-	health = NumericProperty(5)
-	velocity_x = NumericProperty(0)
-	velocity_y = NumericProperty(-4)
-	velocity = ReferenceListProperty(velocity_x, velocity_y)
-
-	def update(self):
-		ret = True
-		self.pos = Vector(*self.velocity) + self.pos
-
-		if self.y > self.parent.top + 100 or self.y < -100 or self.x > self.parent.width+100 or self.x < -100:
-			ret = False
-		elif self.health <= 0:
-			ret = False
-		if ret == False:
-			self.parent.remove_widget(self)
-		return ret
-
-class Debris(Widget):
-	name = 'debris'
-	color1 = 1.0
-	color2 = 0.5
-	health = 10
-	size1 = 10
-	size_decrease = random()
-	health = NumericProperty(10)
-	velocity_x = NumericProperty(0)
-	velocity_y = NumericProperty(0)
-	velocity = ReferenceListProperty(velocity_x, velocity_y)
-
-	def update(self):
-		ret = True
-		self.canvas.clear()
-		self.canvas.add(Color(self.color1, self.color2, 0))
-		self.canvas.add(Rectangle(pos=self.pos,size=(int(self.size1),int(self.size1))))
-		self.color1 -= 0.02
-		self.color2 -= 0.02
-		self.size1 -= self.size_decrease
-		self.pos = Vector(*self.velocity) + self.pos
-		if self.color2 <= 0:
-			ret = False
-		if self.y > self.parent.top + 100 or self.y < -100 or self.x > self.parent.width+100 or self.x < -100:
-			ret = False
-		elif self.health <= 0:
-			ret = False
-		if ret == False:
-			self.parent.remove_widget(self)
-		return ret
-			
-
-
-class EnemyShip(Widget):
-	name = 'enemy'
-	min_y = NumericProperty(200)
-	health = NumericProperty(100)
-	velocity_x = NumericProperty(0)
-	velocity_y = NumericProperty(0)
-	gun_cooldown = time()
-	gun_fire_interval = 1.2
-
-	velocity = ReferenceListProperty(velocity_x, velocity_y)
-
-	def update(self):
-		ret = True
-		self.pos = Vector(*self.velocity) + self.pos
-		if time() > self.gun_cooldown:
-			bullet = EnemyBullet()
-			bullet.x = self.x + self.width/2
-			bullet.y = self.y
-			self.parent.add_widget(bullet)
-			self.gun_cooldown = time() + self.gun_fire_interval
-
-
-		if self.y < self.min_y and self.velocity_y < 0:
-			self.velocity_y *= -1
-		if self.y > self.parent.top + 100 or self.y < -100 or self.x > self.parent.width+100 or self.x < -100:
-			ret = False
-		elif self.health <= 0:
-			self.parent.spawn_debris(self.x, self.y)
-			ret = False
-		if ret == False:
-			enemy = EnemyShip()
-			enemy.x = randint(100, self.parent.width - 100)
-			enemy.y = randint(300, self.parent.top - 30)
-			enemy.velocity_y = randint(-2,-1)
-			enemy.velocity_x = randint(-2, 2)
-			self.parent.add_widget(enemy)
-			self.parent.remove_widget(self)
-		return ret
-
-
-
-class PlayerShip(Widget):
-	name = 'player'
-	health = NumericProperty(100)
-	gun_cooldown = time()
-	gun_fire_interval = 0.1
-	bullet_strength = 70
-	move_text = []
-	velocity_x = NumericProperty(0)
-	velocity_y = NumericProperty(0)
-	velocity = ReferenceListProperty(velocity_x, velocity_y)
-
-
-	
-
-	def update(self):
-		vel = 4
-		self.velocity_x = 0
-		self.velocity_y =0
-		if 'a' in self.move_text:
-			self.velocity_x -= vel
-		if 'd' in self.move_text:
-			self.velocity_x += vel
-		if 'w' in self.move_text:
-			self.velocity_y += vel
-		if 's' in self.move_text:
-			self.velocity_y -= vel
-		self.pos = Vector(*self.velocity) + self.pos
+from Enemies import *
+from Playership import *
+from Misc_objects import *
 
 class ShooterGame(Widget):
-	player1 = ObjectProperty(None)
-	label1 = ObjectProperty(None)
+	player1 = None
 	pbullets = []
 	ebullets = []
 	enemies = []
 	debris = []
-	just_started = True
-
 	
 	def __init__(self, **kwargs):
 		super(ShooterGame, self).__init__(**kwargs)
@@ -170,6 +35,19 @@ class ShooterGame(Widget):
 			self._keyboard_closed, self)
 		self._keyboard.bind(on_key_down=self._on_keyboard_down)
 		self._keyboard.bind(on_key_up=self._on_keyboard_up)
+
+		player1 = PlayerShip()
+		player1.center_x = self.width / 2
+		player1.center_y = 30
+		self.add_widget(player1)
+		self.player1 = player1
+
+		enemy = EnemyShip()
+		enemy.x = randint(200, WIDTH-200)
+		enemy.y = randint(HEIGHT - 300, HEIGHT - 30)
+		enemy.velocity_y = randint(-2,-1)
+		enemy.velocity_x = randint(-2, 2)
+		self.add_widget(enemy)
 
 	def _keyboard_closed(self):
 		self._keyboard.unbind(on_key_down=self._on_keyboard_down)
@@ -242,15 +120,6 @@ class ShooterGame(Widget):
 		pbullets = []
 		ebullets = []
 
-		if self.just_started:
-			enemy = EnemyShip()
-			enemy.x = randint(100, self.width - 100)
-			enemy.y = randint(300, self.top - 30)
-			enemy.velocity_y = randint(-2,-1)
-			enemy.velocity_x = randint(-2, 2)
-			self.add_widget(enemy)
-			self.just_started = False
-
 		for child in self.children:
 			child_name = None
 			try:
@@ -301,8 +170,7 @@ class ShooterGame(Widget):
 							   child2.health -= 10
 							   break
 		
-		self.label1.text = str(self.player1.move_text)
-		pass
+		return True
 
 class ShooterApp(App):
 	def build(self):
@@ -311,4 +179,5 @@ class ShooterApp(App):
 		return game
 
 if __name__ == '__main__':
+
 	ShooterApp().run()
