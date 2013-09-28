@@ -11,6 +11,7 @@ from kivy.vector import Vector
 from kivy.clock import Clock
 
 from Bullets import *
+from Misc_objects import *
 
 class EnemyShip(Widget):
 	name = 'enemy'
@@ -22,6 +23,19 @@ class EnemyShip(Widget):
 	gun_fire_interval = 1.2
 
 	velocity = ReferenceListProperty(velocity_x, velocity_y)
+
+	def __init__(self, x, y, **kwargs):
+		super(EnemyShip, self).__init__(**kwargs)
+		self.x = x
+		self.y = y
+
+	def spawn_debris(self, x, y):
+		dirs = [-2, -1, 1, 2]
+		for xx in range(10):
+			tmp_debris = Debris(x, y)
+			tmp_debris.velocity_x = choice(dirs)
+			tmp_debris.velocity_y = choice(dirs)
+			self.parent.add_widget(tmp_debris)
 
 	def update(self):
 		ret = True
@@ -39,12 +53,11 @@ class EnemyShip(Widget):
 		if self.y > self.parent.top + 100 or self.y < -100 or self.x > self.parent.width+100 or self.x < -100:
 			ret = False
 		elif self.health <= 0:
-			self.parent.spawn_debris(self.x, self.y)
+			self.spawn_debris(self.x, self.y)
 			ret = False
 		if ret == False:
-			enemy = EnemyShip()
-			enemy.x = randint(100, self.parent.width - 100)
-			enemy.y = randint(300, self.parent.top - 30)
+			enemy = EnemyShip(randint(200, self.parent.width-200), 
+				randint(self.parent.height - 300, self.parent.height - 30))
 			enemy.velocity_y = randint(-2,-1)
 			enemy.velocity_x = randint(-2, 2)
 			self.parent.add_widget(enemy)

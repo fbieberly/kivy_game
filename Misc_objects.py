@@ -16,15 +16,16 @@ class Debris(Widget):
 	color2 = 0.5
 	health = 10
 	size1 = 10
-	size_decrease = random()
 	health = NumericProperty(10)
 	velocity_x = NumericProperty(0)
 	velocity_y = NumericProperty(0)
 	velocity = ReferenceListProperty(velocity_x, velocity_y)
 
-	def __init__(self, **kwargs):
+	def __init__(self, x, y, **kwargs):
 		super(Debris, self).__init__(**kwargs)
 		self.size_decrease = random()
+		self.x = x
+		self.y = y
 
 	def update(self):
 		ret = True
