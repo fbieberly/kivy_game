@@ -53,17 +53,89 @@
 			size:self.size
 
 <ShooterGame>:
-	player1: player_ship
-	label1: label_one
+	canvas:
+		Clear
+		Color: 
+			rgb: (0, 0, 0)
+		Rectangle:
+			pos: self.pos
+			size: root.size
 	
-	Label:
-		id: label_one
-		font_size: 20  
-		center_x: 100
-		top: root.top - 10
-		text: "Astro-Venture!"
-		
-	PlayerShip:
-		id: player_ship
+<StartMenu>:
+	but1: button1
+	but2: button2
+	but3: button3
+
+	Button:
+		id: button1
+		font_size: 50
+		background_color: (0,0,0,1)
 		center_x: root.width / 2
-		center_y: 30
+		top: root.top - 50
+		text: "Start game"
+		on_press: root.start_game()
+
+	Button:
+		id: button2
+		font_size: 50
+		background_color: (0,0,0,1)
+		center_x: root.width / 2
+		top: root.top - 150
+		text: "Options"
+		# on_press: root.do_action()
+
+	Button:
+		id: button3
+		font_size: 50
+		background_color: (0,0,0,1)
+		center_x: root.width / 2
+		top: root.top - 250
+		text: "Quit"
+		on_press: root.quit()
+
+<PauseMenu>:
+	but1: button1
+	but2: button2
+	but3: button3
+
+	canvas:
+		Clear
+		Color: 
+			rgba: (1, 1, 1, 0.1)
+		Rectangle:
+			pos: self.pos
+			size: root.size
+
+	Label:
+		id: label1
+		font_size: 20
+		background_color: (1, 1, 1, 0)
+		center_x: root.width / 2
+		top: 1 + self.height
+		text: "PAUSED"
+
+	Button:
+		id: button1
+		font_size: 50
+		background_color: (1, 1, 1, 0)
+		center_x: root.width / 2
+		top: root.top - 50
+		text: "Resume"
+		on_press: root.resume_game()
+
+	Button:
+		id: button2
+		font_size: 50
+		background_color: (1, 1, 1, 0)
+		center_x: root.width / 2
+		top: root.top - 150
+		text: "Options"
+		
+	Button:
+		id: button3
+		font_size: 50
+		background_color: (1, 1, 1, 0)
+		center_x: root.width / 2
+		top: root.top - 250
+		text: "Quit"
+		on_press: root.quit()
