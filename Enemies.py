@@ -30,12 +30,17 @@ class EnemyShip(Widget):
 		self.y = y
 
 	def spawn_debris(self, x, y):
-		dirs = [-2, -1, 1, 2]
+		dirs = [-2, -1, 0, 1, 2]
 		for xx in range(10):
 			tmp_debris = Debris(x, y)
 			tmp_debris.velocity_x = choice(dirs)
 			tmp_debris.velocity_y = choice(dirs)
 			self.parent.add_widget(tmp_debris)
+
+	def check_collision(self, target):
+		if target.collide_widget(self):
+			target.health -= self.health
+			self.health = 0
 
 	def update(self):
 		ret = True

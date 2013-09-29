@@ -24,9 +24,13 @@ class PlayerBullet(Widget):
 		pass
 
 	def check_collision(self, target):
+		ret = False
 		if target.collide_point(self.center_x, self.center_y):
 			target.health -= self.health
 			self.health = 0
+			ret = True
+		return ret
+
 
 	def update(self):
 		ret = True
@@ -48,9 +52,12 @@ class EnemyBullet(Widget):
 	velocity = ReferenceListProperty(velocity_x, velocity_y)
 
 	def check_collision(self, target):
+		ret = False
 		if target.collide_point(self.center_x, self.center_y):
 			target.health -= self.health
 			self.health = 0
+			ret = True
+		return ret
 
 	def update(self):
 		ret = True

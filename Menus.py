@@ -112,3 +112,35 @@ class PauseMenu(Widget):
 		
 	def quit(self):
 		exit(0)
+
+class GameOver(Widget):
+	but1 = ObjectProperty(None)
+	but2 = ObjectProperty(None)
+	but3 = ObjectProperty(None)
+
+	keyboard_inputs = []
+
+	def __init__(self, **kwargs):
+		super(GameOver, self).__init__(**kwargs)
+		Clock.schedule_interval(self.update, 1.0 / 30.0)
+
+	def update(self, dt):
+		x, y = Window.mouse_pos
+		buttons = [self.but1, self.but2, self.but3]
+		# self.but1.font_size = 100
+		for button in buttons:
+			if button.collide_point(x, y):
+				button.font_size = 70
+				button.color = (1, .8, .1, 1)
+			else:
+				button.font_size = 50
+				button.color = (1, 1, 1, 1)
+		return True
+
+	def start_game(self):
+		self.parent.game_state = 'loading'
+		Clock.schedule_interval(self.parent.game_update, 1.0 / 60.0)
+		self.parent.remove_widget(self)
+		
+	def quit(self):
+		exit(0)

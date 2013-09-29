@@ -1,6 +1,7 @@
 #:kivy 1.0.9
 
 <PlayerShip>:
+	# id: player_ship
 	size: 10, 20
 	canvas:
 		Clear
@@ -135,6 +136,54 @@
 		id: button3
 		font_size: 50
 		background_color: (1, 1, 1, 0)
+		center_x: root.width / 2
+		top: root.top - 250
+		text: "Quit"
+		on_press: root.quit()
+
+<GameOver>:
+	but1: button1
+	but2: button2
+	but3: button3
+
+	canvas:
+		Clear
+		Color: 
+			rgba: (0, 0, 0, 1)
+		Rectangle:
+			pos: self.pos
+			size: root.size
+
+	Label:
+		id: label1
+		font_size: 20
+		background_color: (1, 1, 1, 0)
+		center_x: root.width / 2
+		top: 1 + self.height
+		text: "You died!"
+
+	Button:
+		id: button1
+		font_size: 50
+		background_color: (0,0,0,1)
+		center_x: root.width / 2
+		top: root.top - 50
+		text: "Start game"
+		on_press: root.start_game()
+
+	Button:
+		id: button2
+		font_size: 50
+		background_color: (0,0,0,1)
+		center_x: root.width / 2
+		top: root.top - 150
+		text: "Options"
+		# on_press: root.do_action()
+
+	Button:
+		id: button3
+		font_size: 50
+		background_color: (0,0,0,1)
 		center_x: root.width / 2
 		top: root.top - 250
 		text: "Quit"

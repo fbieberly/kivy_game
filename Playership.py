@@ -10,10 +10,11 @@ from kivy.properties import NumericProperty, ReferenceListProperty,\
 from kivy.vector import Vector
 
 from Bullets import *
+from Misc_objects import *
 
 class PlayerShip(Widget):
 	name = 'player'
-	health = NumericProperty(100)
+	health = 100
 	gun_cooldown = time()
 	gun_fire_interval = 0.1
 	bullet_strength = 70
@@ -23,13 +24,7 @@ class PlayerShip(Widget):
 	velocity = ReferenceListProperty(velocity_x, velocity_y)
 
 	keyboard_inputs = []
-	# keyboard keys
-	a = 97
-	s = 115
-	d = 100
-	w = 119
-	space = 32
-	escape = 27
+	_keyboard = None
 
 	def __init__(self, x, y, **kwargs):
 		super(PlayerShip, self).__init__(**kwargs)
@@ -59,7 +54,16 @@ class PlayerShip(Widget):
 		# the system.
 		return True
 
+	def spawn_debris(self, x, y):
+		dirs = [-2, -1, 0, 1, 2]
+		for xx in range(15):
+			tmp_debris = Debris(x, y)
+			tmp_debris.velocity_x = choice(dirs)
+			tmp_debris.velocity_y = choice(dirs)
+			self.parent.add_widget(tmp_debris)
+
 	def update(self):
+		ret = True
 		if self._keyboard == None:
 			self._keyboard = Window.request_keyboard(
 			self._keyboard_closed, self)
@@ -68,6 +72,15 @@ class PlayerShip(Widget):
 
 		self.velocity_x = 0
 		self.velocity_y =0
+		# print self.keyboard_inputs
+
+		if self.health <= 0:
+			self.spawn_debris(self.x, self.y)
+			self.parent.player_lives -= 1
+			self.parent.player_dead = True
+			self.parent.dead_time = time()
+			self.parent.remove_widget(self)
+		
 		if 'a' in self.keyboard_inputs:
 			self.velocity_x -= self.vel
 		if 'd' in self.keyboard_inputs:
@@ -82,9 +95,10 @@ class PlayerShip(Widget):
 				bullet = PlayerBullet(self.center_x, self.top, 100, 0, 100)
 				self.parent.add_widget(bullet)
 				self.gun_cooldown = time() + self.gun_fire_interval
+				self.parent.score -= 1
 
 		if 'escape' in self.keyboard_inputs:
-			self.parent.game_state = 'pause_menu'
+				self.parent.game_state = 'pause_menu'
 
 		self.pos = Vector(*self.velocity) + self.pos
 
@@ -96,3 +110,5 @@ class PlayerShip(Widget):
 			self.y = 0
 		if self.y > self.parent.height - self.height:
 			self.y = self.parent.height - self.height
+		return ret
+
