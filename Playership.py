@@ -48,11 +48,11 @@ class PlayerShip(Widget):
 
 		self.pos = Vector(*self.velocity) + self.pos
 
-		if self.x < self.x:
+		if self.x < 0:
 			self.x = 0
 		if self.x > self.parent.width - self.width:
 			self.x = self.parent.width - self.width
-		if self.y < self.y:
+		if self.y < 0:
 			self.y = 0
 		if self.y > self.parent.height - self.height:
 			self.y = self.parent.height - self.height
