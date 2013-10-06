@@ -65,11 +65,6 @@ class EnemyShip(Widget):
 				self.boom.play()
 			ret = False
 		if ret == False:
-			enemy = EnemyShip(randint(0, self.parent.width), 
-				self.parent.height + 50)
-			enemy.velocity_y = uniform(-2,-1)
-			enemy.velocity_x = uniform(-2, 2)
-			self.parent.add_widget(enemy)
 			self.parent.remove_widget(self)
 		return ret
 

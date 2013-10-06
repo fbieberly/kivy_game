@@ -1,6 +1,6 @@
 from sys import exit
 from time import time
-from random import randint, choice, random
+from random import randint, choice, random, uniform
 from kivy.app import App
 from kivy.graphics import Color, Ellipse, Rectangle
 from kivy.core.window import Window, Keyboard
@@ -32,6 +32,7 @@ class ShooterGame(Widget):
 	dead_time = 0
 	score = 0
 	game_start_time = 0
+	game_mode = "survival"
 	
 	def __init__(self, width, height, **kwargs):
 		super(ShooterGame, self).__init__(**kwargs)
@@ -73,16 +74,12 @@ class ShooterGame(Widget):
 		elif self.game_state == 'loading':
 			self.player_lives = self.start_lives
 			self.score = 0
+			self.game_start_time = time()
 			self.game_state = 'playing'
 			for child in self.children:
 				self.remove_widget(child)
 			player1 = PlayerShip(self.width/2, 30)
 			self.add_widget(player1)
-
-			enemy = EnemyShip(randint(0, self.width), self.height+50)
-			enemy.velocity_y = randint(-2,-1)
-			enemy.velocity_x = randint(-2, 2)
-			self.add_widget(enemy)
 
 			self.score_label = Label(text='Score: '+str(self.score))
 			self.score_label.x = 0
@@ -138,7 +135,12 @@ class ShooterGame(Widget):
 					self.add_widget(player1)
 
 			if self.game_mode == "survival":
-				if len(enemies) < 
+				if len(enemies) < int((time() - self.game_start_time)/10) + 1:
+					enemy = EnemyShip(randint(0, self.width), self.height+50)
+					enemy.velocity_y = uniform(-2,-1)
+					enemy.velocity_x = uniform(-2, 2)
+					self.add_widget(enemy)
+
 
 			self.score_label.text = 'Score: '+str(self.score)
 			self.lives_label.text = 'Lives: '+str(self.player_lives)
