@@ -1,6 +1,6 @@
 from sys import exit
 from time import time
-from random import randint, choice, random
+from random import randint, choice, random, uniform
 from kivy.app import App
 from kivy.core.window import Window
 from kivy.graphics import Color, Ellipse, Rectangle
@@ -11,6 +11,7 @@ from kivy.vector import Vector
 
 from Bullets import *
 from Misc_objects import *
+from Guns import *
 
 class PlayerShip(Widget):
 	name = 'player'
@@ -18,6 +19,7 @@ class PlayerShip(Widget):
 	gun_cooldown = time()
 	gun_fire_interval = 0.1
 	bullet_strength = 70
+	gun_level = 2
 	vel = 4
 	velocity_x = NumericProperty(0)
 	velocity_y = NumericProperty(0)
@@ -30,6 +32,8 @@ class PlayerShip(Widget):
 		super(PlayerShip, self).__init__(**kwargs)
 		self.x = x
 		self.y = y
+		self.gun = RepeaterGun()
+		self.add_widget(self.gun)
 
 	def _keyboard_closed(self):
 		self._keyboard.unbind(on_key_down=self._on_keyboard_down)
@@ -91,11 +95,7 @@ class PlayerShip(Widget):
 			self.velocity_y -= self.vel
 
 		if 'spacebar' in self.keyboard_inputs:
-			if time() > self.gun_cooldown:
-				bullet = PlayerBullet(self.center_x, self.top, 100, 0, 100)
-				self.parent.add_widget(bullet)
-				self.gun_cooldown = time() + self.gun_fire_interval
-				self.parent.score -= 1
+			self.gun.shoot()
 
 		if 'escape' in self.keyboard_inputs:
 				self.parent.game_state = 'pause_menu'

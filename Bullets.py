@@ -12,12 +12,14 @@ class PlayerBullet(Widget):
 	health = NumericProperty(100)
 	velocity_x = NumericProperty(0)
 	velocity_y = NumericProperty(6)
+	angle = NumericProperty()
 	velocity = ReferenceListProperty(velocity_x, velocity_y)
 
 	def __init__(self, x, y, speed, angle, health, **kwargs):
 		super(PlayerBullet, self).__init__(**kwargs)
-		# self.health = health
-		# self.speed = speed
+		self.health = health
+		self.velocity_y = speed
+		self.velocity_x = angle
 		# self.angle = angle
 		self.x = x
 		self.y = y
@@ -30,7 +32,6 @@ class PlayerBullet(Widget):
 			self.health = 0
 			ret = True
 		return ret
-
 
 	def update(self):
 		ret = True
