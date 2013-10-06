@@ -31,11 +31,13 @@ class ShooterGame(Widget):
 	player_dead = False
 	dead_time = 0
 	score = 0
+	game_start_time = 0
 	
 	def __init__(self, width, height, **kwargs):
 		super(ShooterGame, self).__init__(**kwargs)
 		self.width = width
 		self.height = height
+		self.game_start_time = time()
 		self.bg_music = SoundLoader.load('music.ogg')
 		if self.bg_music:
 			self.bg_music.play()
@@ -77,7 +79,7 @@ class ShooterGame(Widget):
 			player1 = PlayerShip(self.width/2, 30)
 			self.add_widget(player1)
 
-			enemy = EnemyShip(randint(200, self.width-200), randint(self.height - 300, self.height - 30))
+			enemy = EnemyShip(randint(0, self.width), self.height+50)
 			enemy.velocity_y = randint(-2,-1)
 			enemy.velocity_x = randint(-2, 2)
 			self.add_widget(enemy)
@@ -92,6 +94,8 @@ class ShooterGame(Widget):
 			self.lives_label.y = 0
 			self.add_widget(self.lives_label)
 		elif self.game_state == 'playing':
+
+
 
 			for child in self.children:
 				child_name = None
@@ -132,6 +136,9 @@ class ShooterGame(Widget):
 					self.player_dead = False
 					player1 = PlayerShip(self.width/2, 30)
 					self.add_widget(player1)
+
+			if self.game_mode == "survival":
+				if len(enemies) < 
 
 			self.score_label.text = 'Score: '+str(self.score)
 			self.lives_label.text = 'Lives: '+str(self.player_lives)

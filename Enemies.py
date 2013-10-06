@@ -1,6 +1,6 @@
 from sys import exit
 from time import time
-from random import randint, choice, random
+from random import randint, choice, random, uniform
 from kivy.app import App
 from kivy.graphics import Color, Ellipse, Rectangle
 from kivy.core.window import Window
@@ -65,10 +65,10 @@ class EnemyShip(Widget):
 				self.boom.play()
 			ret = False
 		if ret == False:
-			enemy = EnemyShip(randint(200, self.parent.width-200), 
-				randint(self.parent.height - 300, self.parent.height - 30))
-			enemy.velocity_y = randint(-2,-1)
-			enemy.velocity_x = randint(-2, 2)
+			enemy = EnemyShip(randint(0, self.parent.width), 
+				self.parent.height + 50)
+			enemy.velocity_y = uniform(-2,-1)
+			enemy.velocity_x = uniform(-2, 2)
 			self.parent.add_widget(enemy)
 			self.parent.remove_widget(self)
 		return ret
