@@ -6,6 +6,7 @@ from kivy.uix.widget import Widget
 from kivy.properties import NumericProperty, ReferenceListProperty,\
 	ObjectProperty
 from kivy.vector import Vector
+from kivy.core.audio import SoundLoader
 
 from Bullets import *
 
@@ -19,8 +20,9 @@ class RepeaterGun(Widget):
 	def __init__(self, **kwargs):
 		super(RepeaterGun, self).__init__(**kwargs)
 		self.gun_cooldown = time()
-		
-		pass
+		self.laser = SoundLoader.load('laser.ogg')
+		# self.laser.stop()
+		# self.laser.loop = False
 
 	def shoot(self):
 		ret = True
@@ -32,6 +34,8 @@ class RepeaterGun(Widget):
 			bullet_angle = uniform(-0.3, 0.3)
 
 			if time() > self.gun_cooldown:
+				if self.laser:
+					self.laser.play()
 				bullet = PlayerBullet(	self.parent.center_x, 
 										self.parent.top, bullet_speed, 
 										bullet_angle, bullet_damage)
@@ -46,6 +50,8 @@ class RepeaterGun(Widget):
 			bullet_angle = uniform(-0.3, 0.3)
 
 			if time() > self.gun_cooldown:
+				if self.laser:
+					self.laser.play()
 				bullet = PlayerBullet(	self.parent.center_x, 
 										self.parent.top, bullet_speed, 
 										bullet_angle, bullet_damage)
@@ -62,8 +68,7 @@ class SpreadGun(Widget):
 	def __init__(self, **kwargs):
 		super(SpreadGun, self).__init__(**kwargs)
 		self.gun_cooldown = time()
-		
-		pass
+		self.laser = SoundLoader.load('laser.ogg')
 
 	def shoot(self):
 		ret = True
@@ -75,6 +80,8 @@ class SpreadGun(Widget):
 			bullet_angle = -5
 
 			if time() > self.gun_cooldown:
+				if self.laser:
+					self.laser.play()
 				bullet = PlayerBullet(	self.parent.center_x, 
 											self.parent.top, bullet_speed, 
 											0, bullet_damage)
@@ -96,6 +103,8 @@ class SpreadGun(Widget):
 			bullet_angle = -7.5
 
 			if time() > self.gun_cooldown:
+				if self.laser:
+					self.laser.play()
 				bullet = PlayerBullet(	self.parent.center_x, 
 											self.parent.top, bullet_speed, 
 											0, bullet_damage)

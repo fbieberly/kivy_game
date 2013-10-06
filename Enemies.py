@@ -9,6 +9,7 @@ from kivy.properties import NumericProperty, ReferenceListProperty,\
 	ObjectProperty
 from kivy.vector import Vector
 from kivy.clock import Clock
+from kivy.core.audio import SoundLoader
 
 from Bullets import *
 from Misc_objects import *
@@ -28,6 +29,7 @@ class EnemyShip(Widget):
 		super(EnemyShip, self).__init__(**kwargs)
 		self.x = x
 		self.y = y
+		self.boom = SoundLoader.load('boom.ogg')
 
 	def spawn_debris(self, x, y):
 		dirs = [-2, -1, 0, 1, 2]
@@ -59,6 +61,8 @@ class EnemyShip(Widget):
 			ret = False
 		elif self.health <= 0:
 			self.spawn_debris(self.x, self.y)
+			if self.boom:
+				self.boom.play()
 			ret = False
 		if ret == False:
 			enemy = EnemyShip(randint(200, self.parent.width-200), 

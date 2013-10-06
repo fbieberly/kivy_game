@@ -11,6 +11,7 @@ from kivy.properties import NumericProperty, ReferenceListProperty,\
 	ObjectProperty
 from kivy.vector import Vector
 from kivy.clock import Clock
+from kivy.core.audio import SoundLoader
 
 from Menus import *
 from Enemies import *
@@ -35,6 +36,11 @@ class ShooterGame(Widget):
 		super(ShooterGame, self).__init__(**kwargs)
 		self.width = width
 		self.height = height
+		self.bg_music = SoundLoader.load('music.ogg')
+		if self.bg_music:
+			self.bg_music.play()
+			self.bg_music.loop = True
+
 
 	def game_update(self, dt):
 		ret = True

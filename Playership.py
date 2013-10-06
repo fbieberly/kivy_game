@@ -8,6 +8,7 @@ from kivy.uix.widget import Widget
 from kivy.properties import NumericProperty, ReferenceListProperty,\
 	ObjectProperty
 from kivy.vector import Vector
+from kivy.core.audio import SoundLoader
 
 from Bullets import *
 from Misc_objects import *
@@ -34,6 +35,7 @@ class PlayerShip(Widget):
 		self.y = y
 		self.gun = RepeaterGun()
 		self.add_widget(self.gun)
+		self.boom = SoundLoader.load('boom.ogg')
 
 	def _keyboard_closed(self):
 		self._keyboard.unbind(on_key_down=self._on_keyboard_down)
@@ -79,6 +81,8 @@ class PlayerShip(Widget):
 		# print self.keyboard_inputs
 
 		if self.health <= 0:
+			if self.boom:
+				self.boom.play()
 			self.spawn_debris(self.x, self.y)
 			self.parent.player_lives -= 1
 			self.parent.player_dead = True
