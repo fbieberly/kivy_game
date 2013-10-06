@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from kivy.config import Config
 WIDTH = 800
 HEIGHT = 600
